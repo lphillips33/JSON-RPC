@@ -1,9 +1,9 @@
 
 public class Item {
 
-	String name;
-	double price;
-	int stock;
+	private String name;
+	private double price;
+	private int stock;
 	
 	Item(String name, double price, int stock) {
 		this.name = name;
@@ -11,15 +11,15 @@ public class Item {
 		this.stock = stock;
 	}
 	
-	private String getName() {
+	public String getName() {
 		return this.name;
 	}
 	
-	private double getPrice() {
+	public double getPrice() {
 		return this.price;
 	}
 	
-	private int getStock() {
+	public int getStock() {
 		return this.stock;
 	}
 	

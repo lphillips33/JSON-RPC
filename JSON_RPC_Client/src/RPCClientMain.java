@@ -34,8 +34,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.protocol.HTTP;
 
 import com.google.gson.*;
 
@@ -86,9 +88,11 @@ public class RPCClientMain {
 	public static void main(String[] args) throws URISyntaxException, ClientProtocolException, IOException {
 			
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-		// read the response back from the server
+		HttpMethods methods = new HttpMethods();
+		/*
+		// READ THE RESPONSE BACK FROM THE SERVER FOR PURCHASE METHOD
 		
+		// WE WILL HAVE A JSON ARRAY OF JSONOBJECTS
 		JsonObject response = new JsonObject();
 		
 		response.addProperty("version", 1.0);
@@ -114,148 +118,33 @@ public class RPCClientMain {
 		String json = gson.toJson(response);
 		System.out.println(json);
 		
-		//Parse the json object and create new items
-		
-		ArrayList<Item> itemsToShow = new ArrayList<Item>();
 		
 		JsonArray t = response.get("params").getAsJsonArray();
 		
+		// turn each object in the json array into an 'Item'.  Put each one in an array list 
 		for(int i = 0; i < t.size(); i++) {
 			//System.out.println(t.get(i).toString());
 			
 			Item tempItem = gson.fromJson(t.get(i).toString(), Item.class);
 			
-			System.out.println(tempItem.toString());
-			
-			itemsToShow.add(tempItem);
+			//System.out.println(tempItem.toString());
+			System.out.println(tempItem.getStock());
+	
 		}
 		
-	
-	}
-
-	
-	//buildMessage(methodName)
-	
-	//change name of parameter to filter
-	public boolean buildMessageForViewStore(ArrayList<String> itemsToGet) throws ClientProtocolException, IOException {
-		
-	
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		
-		HttpPost request = new HttpPost("/");
-		
-		request.addHeader("Host", "Logan's mac");
-		request.addHeader("Content-Type", "application/json");
-		request.addHeader("Content-Length","322");
-		
-		System.out.println(request.getRequestLine().getMethod());
-		System.out.println(request.getRequestLine().getUri());
-		System.out.println(request.getRequestLine().getProtocolVersion());
-		System.out.println(request.getRequestLine().toString());
 		
 		
-		//Build the json object that will be the body of the http messagse
-		JsonObject requestGetItems = new JsonObject();
-		requestGetItems.addProperty("version", "1.0");
-		requestGetItems.addProperty("methodName", "getItems");
 		
-		JsonArray jArray = new JsonArray();
+		//Parse the json object and create new items
 		
-		Iterator<String> iterator = itemsToGet.iterator();
-		while(iterator.hasNext()) {
-			jArray.add(new String(iterator.next()));
-		}
-			
-	
-		requestGetItems.add("params", jArray);
-		
-		String json = gson.toJson(requestGetItems);
-		System.out.println(json);
-		
-		List<Header> httpHeaders = Arrays.asList(request.getAllHeaders());
-		
-		for(Header header : httpHeaders) {
-			System.out.println("HEADERS:" + header.getName() + ":" + header.getValue());
-		}
-		
-		HttpEntity entity = new StringEntity(requestGetItems.toString());
-		request.setEntity(entity);
-		System.out.println("ENTITY:" + "" + request.getEntity());
-				
-		
-		//Send the request
-		
-		InetAddress address = null;
-		address = InetAddress.getByName("localhost");
-		HttpHost target = new HttpHost(address);
-				
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-				
-		HttpResponse httpResponse = httpclient.execute(target, request); 
-				
-		
-		return false;
-	}
-	
-	//ArrayList<Item> itemsToPurchase as parameter???
-	public boolean buildMessageForPurchase(String name, int count) {
-		
-		/*
-		System.out.println("PURCHASING ITEMS");
-		
-		JsonObject requestPurchaseItems = new JsonObject();
-		requestPurchaseItems.addProperty("version", "1.0");
-		requestPurchaseItems.addProperty("methodName", "purchase");
-		
-		JsonArray purchaseArray = new JsonArray();
-		purchaseArray.add(new String("book"));
-		purchaseArray.add(new Integer(5));
-		
-		requestPurchaseItems.add("params", purchaseArray);
-		
-		String purchaseJson = gson.toJson(requestPurchaseItems);
-		System.out.println(purchaseJson);
+		ArrayList<Item> itemsToShowOnGui = methods.parseGetItemsServerResponse(response);
 		*/
 		
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-		JsonObject requestPurchaseItems = new JsonObject();
-		requestPurchaseItems.addProperty("version", "1.0");
-		requestPurchaseItems.addProperty("methodName", "purchase");
-		
-		JsonArray purchaseArray = new JsonArray();
-		
-		purchaseArray.add(name);
-		purchaseArray.add(count);
+		String itemToGet = "book";
+		methods.buildMessageForViewStore(itemToGet);
 			
-		requestPurchaseItems.add("params", purchaseArray);
-		
-		String purchaseJson = gson.toJson(requestPurchaseItems);
-		System.out.println(purchaseJson);
-	
-		// read the response back from the server.  Create a method that 
-		// will return a json object to do this
 		
 		
-		JsonObject response = new JsonObject();
-		
-		response.addProperty("version", 1.0);
-		
-		//each element is a json object consisting of name, price, stock
-		JsonArray returnArray = new JsonArray();
-		
-		JsonObject item1Info = new JsonObject();
-		item1Info.addProperty("name", "Rant");
-		item1Info.addProperty("price", 13.99);
-		item1Info.addProperty("stock", 5);
-		
-		JsonObject item2Info = new JsonObject();
-		
-		
-		returnArray.add(item1Info);
-		
-		return false;
 	}
-	
 	
 }
