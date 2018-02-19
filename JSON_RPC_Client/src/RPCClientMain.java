@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.plaf.synth.SynthSpinnerUI;
 
@@ -41,105 +42,45 @@ import org.apache.http.protocol.HTTP;
 
 import com.google.gson.*;
 
-
-
-/*
-HeaderElementIterator it = new BasicHeaderElementIterator(
-	    request.headerIterator("Set-Cookie"));
-
-	while (it.hasNext()) {
-	    HeaderElement elem = it.nextElement(); 
-	    System.out.println(elem.getName() + " = " + elem.getValue());
-	    NameValuePair[] params = elem.getParameters();
-	    for (int i = 0; i < params.length; i++) {
-	        System.out.println(" " + params[i]);
-	    }
-	}
-*/
-
-
-/*
-List<Header> httpHeaders = Arrays.asList(request.getAllHeaders());
-
-for(Header header : httpHeaders) {
-	System.out.println(header.getName() + ":" + header.getValue());
-}
-*/
-
-
-/**
- * https://static.javadoc.io/com.google.code.gson/gson/
- * 2.6.2/com/google/gson/JsonArray.html#add-java.lang.String-
- * 
- */
-
-
-/*
- * 
- * 
- * https://stackoverflow.com/questions/9389842/how-to-send-a-json-object
- * -over-httpclient-request-with-android
- */
-
-
-
 public class RPCClientMain {
 
-	public static void main(String[] args) throws URISyntaxException, ClientProtocolException, IOException {
-			
+	public static void main(String[] args) throws Exception {
+
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		HttpMethods methods = new HttpMethods();
-		/*
-		// READ THE RESPONSE BACK FROM THE SERVER FOR PURCHASE METHOD
+
+		Scanner scan = new Scanner(System.in);
 		
-		// WE WILL HAVE A JSON ARRAY OF JSONOBJECTS
-		JsonObject response = new JsonObject();
+		boolean done = false;
 		
-		response.addProperty("version", 1.0);
+		while(!done)	 {
 		
-		//each element is a json object consisting of name, price, stock
-		JsonArray itemDescriptions = new JsonArray();
-		
-		JsonObject item1Info = new JsonObject();
-		item1Info.addProperty("name", "Rant");
-		item1Info.addProperty("price", 13.99);
-		item1Info.addProperty("stock", 5);
-		
-		JsonObject item2Info = new JsonObject();
-		item2Info.addProperty("name", "MAGA");
-		item2Info.addProperty("price", 19.99);
-		item2Info.addProperty("stock", 500);
-		
-		itemDescriptions.add(item1Info);
-		itemDescriptions.add(item2Info);
-		
-		response.add("params", itemDescriptions);
-		
-		String json = gson.toJson(response);
-		System.out.println(json);
-		
-		
-		JsonArray t = response.get("params").getAsJsonArray();
-		
-		// turn each object in the json array into an 'Item'.  Put each one in an array list 
-		for(int i = 0; i < t.size(); i++) {
-			//System.out.println(t.get(i).toString());
+			System.out.println("To view the inventory type view, to purchase an item, type 'purchase', to quit type 1");
+			String option = scan.nextLine();
 			
-			Item tempItem = gson.fromJson(t.get(i).toString(), Item.class);
-			
-			//System.out.println(tempItem.toString());
-			System.out.println(tempItem.getStock());
-	
+			if(option.equalsIgnoreCase("view")){
+				System.out.println("What item do you want to search for?, or press enter to view the whole store");
+				String itemName = scan.nextLine();
+				methods.buildMessageForViewStore(itemName);
+			} else if (option.equalsIgnoreCase("purchase")){
+				System.out.println("Enter the name of the item");
+				String itemName = scan.nextLine();
+				System.out.println("Enter the quantity that you would like to purchase");
+				int quantity = scan.nextInt();
+				//send message to buy quantity amount of item name
+				double sucess = methods.buildMessageForPurchase(itemName, quantity);
+				System.out.println("You purchase " + sucess + " dollars worth of items");
+			} else if (option.equals("1")) {
+				done = true;
+				break;
+			} else {
+				throw invalidEntryError();
+			}		
 		}
 		
-		//Parse the json object and create new items
-		
-		ArrayList<Item> itemsToShowOnGui = methods.parseGetItemsServerResponse(response);
-		*/
-		
-		String itemToGet = "book";
-		methods.buildMessageForViewStore(itemToGet);
-		
 	}
-	
+	private static Exception invalidEntryError() {
+		System.out.println("invalid entry");
+		return null;
+	}
 }

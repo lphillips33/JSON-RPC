@@ -1,0 +1,58 @@
+//include the source docs for gson 2.6.2
+//include the source docs for apache http
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.swing.plaf.synth.SynthSpinnerUI;
+
+import java.util.Iterator;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HeaderElementIterator;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicHeaderElementIterator;
+import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.protocol.HTTP;
+
+import com.google.gson.*;
+
+public class RPCClientMain {
+
+	public static void main(String[] args) throws URISyntaxException, ClientProtocolException, IOException {
+			
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		HttpMethods methods = new HttpMethods();
+		
+		String itemToGet = "book";
+		methods.buildMessageForViewStore(itemToGet);
+		//double success = methods.buildMessageForPurchase("shoes", 1);
+		//System.out.println("SUCCESS FROM MAIN: " + success);
+		
+	}
+	
+}

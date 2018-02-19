@@ -1,0 +1,89 @@
+//include the source docs for gson 2.6.2
+//include the source docs for apache http
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+import javax.swing.plaf.synth.SynthSpinnerUI;
+
+import java.util.Iterator;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HeaderElementIterator;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicHeaderElementIterator;
+import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.protocol.HTTP;
+
+import com.google.gson.*;
+
+public class RPCClientMain {
+
+	public static void main(String[] args) throws Exception {
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		HttpMethods methods = new HttpMethods();
+
+		Scanner scan = new Scanner(System.in);
+	
+		boolean done = false;
+		
+		String option = "";
+		
+		while(!done)	 {
+			System.out.println("To view the inventory type view, to purchase an item, type 'purchase', to quit type 1");
+			option = scan.nextLine();
+			if(option.equalsIgnoreCase("view")){
+				System.out.println("What item do you want to search for?, or press enter to view the whole store");
+				String itemName = scan.nextLine();
+				methods.buildMessageForViewStore(itemName);
+
+			} else if (option.equalsIgnoreCase("purchase")){
+				System.out.println("Enter the name of the item");
+				String itemName = scan.nextLine();
+				System.out.println("Enter the quantity that you would like to purchase");
+				int quantity = scan.nextInt();
+				//send message to buy quantity amount of item name
+				double sucess = methods.buildMessageForPurchase(itemName, quantity);
+				System.out.println("You purchase " + sucess + " dollars worth of items");
+			} else if (option.equals("1")) {
+				done = true;
+				break;
+			}else {
+
+				throw invalidEntryError();
+			}	
+		}
+
+	}
+	private static Exception invalidEntryError() {
+		System.out.println("invalid entry");
+		return null;
+	}
+}
+
