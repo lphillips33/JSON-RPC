@@ -132,9 +132,6 @@ public class RPCClientMain {
 	
 		}
 		
-		
-		
-		
 		//Parse the json object and create new items
 		
 		ArrayList<Item> itemsToShowOnGui = methods.parseGetItemsServerResponse(response);
@@ -142,8 +139,6 @@ public class RPCClientMain {
 		
 		String itemToGet = "book";
 		methods.buildMessageForViewStore(itemToGet);
-			
-		
 		
 	}
 	

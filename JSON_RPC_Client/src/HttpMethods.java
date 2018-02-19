@@ -1,4 +1,7 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -6,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -16,6 +20,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -54,7 +59,7 @@ public class HttpMethods {
 		//contructor
 	}
 
-	//change name of parameter to filter
+	//change name of parameter to filter.  Passing in empty filter gives us back everything from server
 	public  boolean buildMessageForViewStore(String itemToGet) throws ClientProtocolException, IOException {
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -62,73 +67,81 @@ public class HttpMethods {
 		request.addHeader("Host", "Logan's mac"); //Add host header
 		request.addHeader("Content-Type", "application/json"); //add content-type header
 		
+		/*
 		System.out.println(request.getRequestLine().getMethod());
 		System.out.println(request.getRequestLine().getUri());
 		System.out.println(request.getRequestLine().getProtocolVersion());
 		System.out.println(request.getRequestLine().toString());
-
+		*/
+		
 		JsonObject requestGetItems = new JsonObject(); //Build the Json object that will be the body of the http message
 		requestGetItems.addProperty("version", "1.0");
 		requestGetItems.addProperty("methodName", "getItems");
 		
 		//Send as array for nate
 		
+		//"params": null is empty 
+		
+		//if itemToGet = null
+			//requestGetItems.add("params", null);
+		
 		JsonArray array = new JsonArray();
 		array.add(itemToGet);
 		requestGetItems.add("params", array);
+	
+		//requestGetItems.add("params", null);
 		
 		
 		//requestGetItems.addProperty("params", itemToGet); // Add that item we want as the parameter.  If the string is empty, we get back everything.  Had this BEFORE talking to nate
 
 		//put the json object into a string representation to check
 		String json = gson.toJson(requestGetItems);
-		System.out.println("JSON REPRESENTATION OF BODY MESSAGE: " + json);
+		//System.out.println("JSON REPRESENTATION OF BODY MESSAGE: " + json);
 
 		List<Header> httpHeaders = Arrays.asList(request.getAllHeaders()); //turn the array of headers into a list
 		for(Header header : httpHeaders) { // go through headers of our HttpPost request object
-			System.out.println("HEADERS:" + header.getName() + ":" + header.getValue());
+			//System.out.println("HEADERS:" + header.getName() + ":" + header.getValue());
 		}
 
 		//Should it be HttpEntity entity?
 		StringEntity entity = new StringEntity(requestGetItems.toString());
 		entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
 		request.setEntity(entity);
-		System.out.println("ENTITY:" + "" + request.getEntity());
+		//System.out.println("ENTITY:" + "" + request.getEntity());
 
 		//Send the request
 
-		HttpResponse httpResponse = sendHttpMessage("10.1.131.68", request);
-		
+		HttpResponse httpResponse = sendHttpMessage("10.1.131.117", request);
+		System.out.println("RESPONSE FROM SERVER: " + httpResponse.toString());
+		System.out.println("LENGTH OF ENTITY: " + httpResponse.getEntity().getContentLength());
+		System.out.println("ENTITY:" + httpResponse.getEntity().toString());
+
 		httpResponse.getStatusLine().getStatusCode();
 
 		//server comes back, create an arraylist of items to display 
-		System.out.println("ITEMS FROM SERVER ARE COMING!!");
+		//System.out.println("ITEMS FROM SERVER ARE COMING!!");
 
 		//HANDLE RESPONSE
 
 		
 		List<Header> responseHeaders = Arrays.asList(httpResponse.getAllHeaders()); //Get the headers from the Server.  Put the Header array into an array list
 		for(Header header : responseHeaders) { //Go through each response headers
-			System.out.println("SERVER HEADERS:" + header.getName() + ":" + header.getValue());
+			//System.out.println("SERVER HEADERS:" + header.getName() + ":" + header.getValue());
 		}
 
-		System.out.println("THE ENTITY OF THE RESPONSE IS COMING!!!");
-		String jsonString = httpResponse.getEntity().toString();
-
+		//System.out.println("THE ENTITY OF THE RESPONSE IS COMING!!!");
+		//String jsonString = httpResponse.getEntity().toString(); - doesn't convert to string correctly.  need to use EntityUtils
 		
-		JsonElement element = gson.fromJson(jsonString, JsonElement.class); // Convert the entity string to a JsonElement
+		String content = EntityUtils.toString(httpResponse.getEntity());
+		System.out.println(content);
+
+		JsonElement element = gson.fromJson(content, JsonElement.class); // Convert the entity string to a JsonElement
 		JsonObject jsonObj = element.getAsJsonObject(); // Now we can convert the JsonElement to a JsonObject.  The entity is now a json object
 
 		ArrayList<Item> itemsFromServer = parseGetItemsServerResponse(jsonObj); // Go through the server response (json entity).  Convert each Json object to an Item
 		for(Item tempItem : itemsFromServer) { //Go through each item from the server
 			System.out.println("SERVER RESPONSE " + tempItem.toString());
 		} 
-		
-		
-		
-//		JsonReader reader = new JsonReader(new StringReader(jsonString));
-//		reader.setLenient(true);
-//		Item item = gson.fromJson(reader, Item.class);
 		
 		return true;
 	}
@@ -150,13 +163,10 @@ public class HttpMethods {
 
 		requestPurchaseItems.add("params", purchaseArray); //Add json array to our object 
 
-		
 		String purchaseJson = gson.toJson(requestPurchaseItems); // put json object to string to check 
 		System.out.println(purchaseJson);
 
 		// Send the http message
-		
-		
 		
 		HttpPost request = new HttpPost("/"); //Create http post object
 	
@@ -168,6 +178,7 @@ public class HttpMethods {
 		request.setEntity(entity);
 
 		HttpResponse httpResponse = sendHttpMessage("10.1.131.68", request);
+		
 		httpResponse.getStatusLine().getStatusCode();
 
 		//Get the headers from the Server.  Put the Header array into an array list
@@ -180,10 +191,12 @@ public class HttpMethods {
 
 		System.out.println("THE ENTITY OF THE RESPONSE IS COMING!!!");
 
-		String jsonString = httpResponse.getEntity().toString();
-
+		HttpEntity json = httpResponse.getEntity();
+		String content = EntityUtils.toString(json);
+		System.out.println(content);
+		
 		//convert to json object
-		JsonElement element = gson.fromJson(jsonString, JsonElement.class);
+		JsonElement element = gson.fromJson(content, JsonElement.class);
 
 		//Now we can convert the JsonElement to a JsonObject
 		JsonObject jsonObj = element.getAsJsonObject();
@@ -200,15 +213,29 @@ public class HttpMethods {
 
 		ArrayList<Item> itemsToShow = new ArrayList<Item>();
 
-		JsonArray t = response.get("params").getAsJsonArray();
+		JsonArray t = response.get("return").getAsJsonArray();
 
 		// turn each object in the json array into an 'Item'.  Put each one in an array list 
 		for(int i = 0; i < t.size(); i++) {
 			//System.out.println(t.get(i).toString());
 
+			System.out.println("WHAT DOES EACH ONE LOOK LIKE" + t.get(i).toString());
+			
+			//convert to json object
+			JsonElement element = gson.fromJson(t.get(i).toString(), JsonElement.class);
+
+			//Now we can convert the JsonElement to a JsonObject
+			JsonObject jsonObj = element.getAsJsonObject();
+			
+			System.out.println("JSON OBJECT " + jsonObj.toString());
+			
+			//name, cost, quantity
+			
+			//Item tempItem = new Item(jsonObj.get("name").toString(), jsonObj.get("price").getAsDouble(), jsonObj.get("stock").getAsInt());
+			
 			Item tempItem = gson.fromJson(t.get(i).toString(), Item.class);
 
-			//System.out.println(tempItem.toString());
+			System.out.println(tempItem.toString());
 			
 			itemsToShow.add(tempItem);
 		}

@@ -1,0 +1,32 @@
+
+public class Item {
+
+	private String name;
+	private double cost;
+	private int stock;
+	
+	Item(String name, double price, int stock) {
+		this.name = name;
+		this.cost = price;
+		this.stock = stock;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public double getPrice() {
+		return this.cost;
+	}
+	
+	public int getStock() {
+		return this.stock;
+	}
+	
+	public String toString() {
+		String temp = "Name: " + this.name + " " + " Price: " 
+				+ cost + " Stock: " + stock;
+		
+		return temp;
+	}
+}
