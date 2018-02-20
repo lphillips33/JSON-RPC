@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/http stuff"/>
 	<classpathentry kind="lib" path="/Users/LoganPhillips/Downloads/gson-2.6.2.jar"/>
+	<classpathentry kind="lib" path="/Users/LoganPhillips/Downloads/gson-2.6.2-javadoc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

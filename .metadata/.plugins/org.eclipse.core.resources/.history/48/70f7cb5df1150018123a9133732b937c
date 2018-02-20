@@ -1,8 +1,15 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -22,16 +29,19 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
 
 public class HttpMethods {
-	
+
+
 	public HttpMethods() {
 		//contructor
 	}
-	
+
 	public  boolean buildMessageForViewStore(String filter) throws ClientProtocolException, IOException {
+
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		
+	
 		JsonObject requestGetItems = new JsonObject(); //Build the Json object that will be the body of the http message
 		requestGetItems.addProperty("version", "1.0");
 		requestGetItems.addProperty("methodName", "getItems");
@@ -47,6 +57,7 @@ public class HttpMethods {
 		String json = gson.toJson(requestGetItems);
 		System.out.println("JSON REPRESENTATION OF BODY MESSAGE: " + json);
 		
+		//Send the request
 		HttpPost request = createHTTPMessage(requestGetItems);
 		HttpResponse httpResponse = sendHttpMessage("10.1.130.217", request); //get the response
 		parseViewStoreResponse(httpResponse); 
@@ -103,7 +114,8 @@ public void parseViewStoreResponse(HttpResponse response) throws ParseException,
 		double successPrice = parsePurchaseResponse(httpResponse); //get the response
 		return successPrice;
 	}
-
+	
+	
 public double parsePurchaseResponse(HttpResponse httpResponse) throws ParseException, IOException {
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();

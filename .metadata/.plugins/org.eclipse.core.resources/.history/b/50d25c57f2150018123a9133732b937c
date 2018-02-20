@@ -103,7 +103,8 @@ public void parseViewStoreResponse(HttpResponse response) throws ParseException,
 		double successPrice = parsePurchaseResponse(httpResponse); //get the response
 		return successPrice;
 	}
-
+	
+	
 public double parsePurchaseResponse(HttpResponse httpResponse) throws ParseException, IOException {
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
