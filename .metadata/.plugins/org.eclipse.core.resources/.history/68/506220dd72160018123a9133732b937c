@@ -126,7 +126,7 @@ public double parsePurchaseResponse(HttpResponse httpResponse) throws ParseExcep
 	
 public HttpPost createHTTPMessage(JsonObject jsonRequest) throws UnsupportedEncodingException {
 		HttpPost httpRequest = new HttpPost("/"); //Create the HTTP Post object
-		httpRequest.addHeader("Host", "Logan Paul's personal laptop"); //Add host header
+		httpRequest.addHeader("Host", "Logan's mac"); //Add host header
 		httpRequest.addHeader("Content-Type", "application/json"); //add content-type header
 		StringEntity entity = new StringEntity(jsonRequest.toString()); //get the json request body as an entity
 		entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));

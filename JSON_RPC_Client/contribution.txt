@@ -1,0 +1,11 @@
+Logan - 2 parsing methods
+
+Nate - buildMessageForViewStore(), buildMessageForPurchase()
+
+together - createHTTPMessage(), sendHTTPMessage().  We also helped each other on 
+the above methods if we got stuck.
+
+We also worked to develop a GUI in JavaFX, but we were running into small problems that we couldn't figure out.
+This is unfortunate, because it was really quite the work of art.  
+
+*Nate bugged me to link you to the real e-commerce site so here it is: https://maverickbyloganpaul.com/

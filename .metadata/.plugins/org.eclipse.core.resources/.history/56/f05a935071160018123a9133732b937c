@@ -53,8 +53,8 @@ public class RPCClientMain {
 		
 		boolean done = false;
 		
-while(!done)	 {
-			
+		while(!done)	 {
+		
 			System.out.println("To view the inventory type view, to purchase an item, type 'purchase', to quit type 1");
 			String option = scan.nextLine();
 			
@@ -73,14 +73,10 @@ while(!done)	 {
 			} else if (option.equals("1")) {
 				done = true;
 				break;
-			} //else { //this was throwing an error for some reason.  
-//				throw invalidEntryError();
-//			}		
+			} else {
+				throw invalidEntryError();
+			}		
 		}
-		
-		
-		
-		
 		
 	}
 	private static Exception invalidEntryError() {
